@@ -5,6 +5,7 @@ import com.learn.springboot.sblessons.springdata.product.entities.Customer;
 import com.learn.springboot.sblessons.springdata.product.entities.Product;
 import com.learn.springboot.sblessons.springdata.product.repos.CustomerRepository;
 import com.learn.springboot.sblessons.springdata.product.repos.ProductRepository;
+import org.hibernate.Session;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
@@ -194,5 +196,24 @@ class ProductdataApplicationTests {
         customerRepository.findById(1).stream().forEach(c -> System.out.println(c.getEmail()));
         customerRepository.UpdateCustomerEmailById(1, "jmaruti@gmail.com");
         customerRepository.findById(1).stream().forEach(c -> System.out.println(c.getEmail()));
+    }
+
+    @Autowired
+    EntityManager entityManager;
+
+    @Test
+    @Transactional
+    // this annotation is required for L1 caching to be enabled.
+    // without it, a select is issued every time there is a call to a find method
+    public void testCaching() {
+        // the following 2 calls will generate just one SELECT
+        // if @Transactional is removed, 2 SELECTs can be seen in the console
+
+        final Session unwrap = entityManager.unwrap(Session.class);
+
+        Product product = productRepository.findById(1).get();
+        productRepository.findById(1);
+        unwrap.evict(product);
+        productRepository.findById(1);
     }
 }

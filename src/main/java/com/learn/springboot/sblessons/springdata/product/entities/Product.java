@@ -1,9 +1,13 @@
 package com.learn.springboot.sblessons.springdata.product.entities;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class Product {
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)

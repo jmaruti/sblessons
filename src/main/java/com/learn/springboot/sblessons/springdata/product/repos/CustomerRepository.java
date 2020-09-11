@@ -16,7 +16,7 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
     List<Customer> findByEmailLike(String email);
     List<Customer> findByIdIn(List<Integer> ids);
 
-    @Query("update Customer set email = :c_email where id = :c_id")
+    @Query("update CompositeKeyCustomer set email = :c_email where id = :c_id")
     @Modifying
     void UpdateCustomerEmailById(@Param("c_id") Integer id, @Param("c_email") String email);
 
